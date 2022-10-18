@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
 	 // starts at -1 for it to increment before exec; -1 -> 0
 	
 	for (int i=0; i < num_children; i++){ //creating child processes
-		shm_base->index += 1;
+		//shm_base->index += 1;
 		cpid = fork();
 		char childNum[5]; //buffer for second argument in execlp()
 		sprintf(childNum,"%d",i + 1);
@@ -75,7 +75,8 @@ int main(int argc, char** argv) {
 	}
 	while(wait(NULL) != -1); // blocks code until all children have terminated
 	printf("Master received termination signals from all %d child processes",num_children);
-	printf("Shared memory first index: %d\n",shm_base->response[0]);	
+	printf("Shared memory first index: %d\n",shm_base->response[0]);
+	printf("Shared memory second index: %d\n",shm_base->response[1]);	
 	shm_unlink(name); // unlinks shared memory
 	exit(0); // terminates program
 }

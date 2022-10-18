@@ -22,6 +22,7 @@ int main(int argc, char **argv){
 	int shm_fd;
 	struct CLASS *shm_base;
 	struct CLASS *shm_ptr;
+	int arrIdx = atoi(argv[1]) - 1; // index needed to change
 	printf("Slave begins execution\n");
 	printf("I am child number %s, received shared memory name %s\n",argv[1],argv[0]);
 
@@ -38,8 +39,8 @@ int main(int argc, char **argv){
  	} 
 	printf("I am child number %s, and the next empty slot is %d\n",argv[1],shm_base->index);
 	// writes into shared memory
-//	shm_base->index += 1; // increases next index
-	shm_base->response[0] = 420; // test
+
+	shm_base->response[arrIdx] = arrIdx + 1; // test successful
 	printf("I have written my child number to shared memory\n");
 	
 	shm_unlink(argv[0]); // unlinks shm_memory
