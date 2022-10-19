@@ -1,24 +1,25 @@
 #include <sys/types.h>
+#include <errno.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <string.h>
-#include <iostream>
+//#include <iostream>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdlib.h>
-#include <iostream>
+//#include <iostream>
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <string>
-#include <cstdio>
+//#include <string>
+//#include <cstdio>
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <errno.h>
-using namespace std;
+//using namespace std;
 
 struct CLASS { // struct shared memory implementation
 	int index;			// index to next available response slot
@@ -65,7 +66,7 @@ int main(int argc, char** argv) {
 		sprintf(childNum,"%d",i + 1);
 		if (cpid == 0){ // child process
 			//shm_base->index += 1;
-			
+
 			execlp("./slave",name,childNum,NULL);
 		}
 		//printf("Inside master, index is : %d\n",shm_base->index);
@@ -74,9 +75,25 @@ int main(int argc, char** argv) {
 
 	}
 	while(wait(NULL) != -1); // blocks code until all children have terminated
-	printf("Master received termination signals from all %d child processes",num_children);
+	printf("Master received termination signals from all %d child processes\n",num_children);
 	printf("Shared memory first index: %d\n",shm_base->response[0]);
-	printf("Shared memory second index: %d\n",shm_base->response[1]);	
-	shm_unlink(name); // unlinks shared memory
+	printf("Shared memory second index: %d\n",shm_base->response[1]);
+	//printf("Shared memory third index: %d\n",shm_base->response[2]);	
+	// removes shared memory
+
+	if (munmap(shm_base, SIZE) == -1) { // removes mapped memory segment
+ 		printf("prod: Unmap failed: %s\n", strerror(errno));
+ 		exit(1);
+	}
+
+
+
+	if (close(shm_fd) == -1) { // closes shared memory segment
+ 		printf("prod: Close failed: %s\n",
+		strerror(errno));
+		exit(1);
+	 }
+
+	//shm_unlink(name); // unlinks shared memory
 	exit(0); // terminates program
 }
