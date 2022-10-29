@@ -23,15 +23,16 @@
 
 struct CLASS { // struct shared memory implementation
 	int response[10];	// each child writes its child number here
+	int index; // represents the next index to right the child in
 };
 
-void display(struct CLASS *base, int numChildren);
+void display(struct CLASS *base, int numChildren); // hoisted function
 
 int main(int argc, char** argv) {
 	pid_t cpid; // fork id
 	int shm_fd; // shared memory file descriptor 
 	int num_children = atoi(argv[1]); // takes argv[1] from char** to int
-	const int SIZE = 4096;
+	const int SIZE = sizeof(struct CLASS);
 	const char *name = argv[2]; // shm name
 	struct CLASS  *shm_base; // base address of base memory
 	//struct CLASS *shm_ptr; // moveable ptr
@@ -51,6 +52,7 @@ int main(int argc, char** argv) {
 		printf("Map failed");
 		exit(1);
 	}
+	shm_base->index = 0;
 	for (int i=0; i < num_children; i++){ //creates multiple child processes depending on childNumber
 
 		cpid = fork(); // creates child process
